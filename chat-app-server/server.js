@@ -38,13 +38,13 @@ app.post('/login', function(req, res) {
     newUser.username = username
 
     User.findOne({ 'username': newUser.username }, (err, result) => {
-        console.log('hello1')
+        // console.log('hello1')
         if (!err) {
-            console.log('hello2')
-                // If the document doesn't exist
+            // console.log('hello2')
+            // If the document doesn't exist
             if (!result) {
-                console.log('hello3')
-                    // Create and Save it
+                // console.log('hello3')
+                // Create and Save it
                 newUser.save(function(err) {
                     if (err) {
                         console.log(err)

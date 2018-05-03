@@ -4,18 +4,18 @@ var Schema = mongoose.Schema;
 var autoIncrement = require('mongoose-auto-increment');
 var timestamps = require('mongoose-timestamp');
 
-var connection = mongoose.createConnection("mongodb://localhost:27017/irisDB");
+var connection = mongoose.createConnection("mongodb://localhost:27017/boobooline");
 autoIncrement.initialize(connection);
 
 // create a schema
 var messageSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
-  text: { type: String, required: true }
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    text: { type: String, required: true }
 }, { collection: "messages" });
 
 messageSchema.plugin(autoIncrement.plugin, {
-  model: 'Message',
-  field: 'messageId'
+    model: 'Message',
+    field: 'messageId'
 });
 messageSchema.plugin(timestamps);
 

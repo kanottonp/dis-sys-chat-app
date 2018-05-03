@@ -5,22 +5,70 @@ const morgan = require('morgan')
 const cors = require('cors')
 const port = process.env.PORT || 3333
 
-const app = express()
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
 
-server.listen(port, function() {
-    console.log(`listening on ${port}`)
-})
+var Message = require('./models/message.js');
+var Group = require('./models/group.js');
+var User = require('./models/user.js');
+
+
+
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost:27017/boobooline')
+
+
+const app = express()
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+var server = app.listen(port, function() {
+    console.log('Listening on port ' + port);
+});
+
+var io = require('socket.io').listen(server);
 
 app.get('/', function(req, res) {
     res.sendfile(__dirname + '/public/index.html');
 });
 
+app.post('/logins', function(req, res) {
+
+    var username = req.body.username
+
+    var newUser = new User()
+    newUser.username = username
+
+    User.findOne({ 'username': newUser.username }, (err, result) => {
+        console.log('hello1')
+        if (!err) {
+            console.log('hello2')
+                // If the document doesn't exist
+            if (!result) {
+                console.log('hello3')
+                    // Create and Save it
+                newUser.save(function(err) {
+                    if (err) {
+                        console.log(err)
+                        res.status(400).send()
+                    } else {
+                        res.status(200).send(`${newUser.username} is Registered `)
+                    }
+                })
+            } else {
+                res.status(200).send(`${newUser.username} is logging in `)
+            }
+
+        } else {
+            console.log(err)
+            res.status(500).send()
+        }
+    })
+
+})
+
 io.on('connection', function(socket) {
     console.log("a user connected")
     socket.on('chat message', function(msg) {
         console.log('MSG : ' + msg);
-		io.emit('chat message', msg);
+        io.emit('chat message', msg);
     });
 });

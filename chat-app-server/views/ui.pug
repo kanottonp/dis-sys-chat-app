@@ -1,0 +1,194 @@
+-function toDD(dateString){
+    -var date = new Date(dateString);
+    -var m = date.getMinutes().toString();
+    -if (m.length == 1) m = '0' + m;
+    -var s = date.getSeconds().toString();
+    -if (s.length == 1) s = '0' + s;
+    -return date.toDateString()+' '+date.getHours()+':'+m+':'+s;
+-}
+
+doctype html
+html
+    head
+        meta(charset="utf-8")
+        title
+            if groupName
+                | #{groupName} - Iris Messenger
+            else
+                | Iris Messenger
+        link(rel="stylesheet", href="css/bootstrap.min.css")
+        link(rel="stylesheet", href="css/style.css")
+    body
+        div.container-fluid
+            div.row.ui-title
+                // span(class="glyphicon glyphicon-comment icon-iris")
+                img.rainbow(src="img/iris-rainbow.png")
+                |  Iris Messenger
+                p.pull-right
+                    span.username #{user.name}
+                    |  
+                    a(href="signout", data-toggle="tooltip", data-placement="left", title="Logout")
+                        span.glyphicon.glyphicon-off
+            div.row.ui-subtitle
+                div.conversation-title
+                    span Conversations
+                    a#btn-add-conversation.pull-right(href="#", data-toggle="modal", data-target="#modal-add-conversation")
+                        span.glyphicon.glyphicon-plus(data-toggle="tooltip", data-placement="left", title="Create new conversation")
+                if groupName
+                    div.message-title
+                        span #{groupName}
+                        if joinedStatus
+                            a.pull-right(href="#", data-toggle="modal", data-target="#modal-leave-conversation")
+                                span.glyphicon.glyphicon-log-out(data-toggle="tooltip", data-placement="left", title="Leave this conversation")
+            if groupName && joinedStatus
+                div.row.ui-textbox
+                    form#message-text-form
+                        input#message-textbox.form-control(type="text", autocomplete="off", placeholder="Enter your message (press Enter to send)")
+                        button(type="submit", data-toggle="tooltip", data-placement="top", title="Send")
+                            span.glyphicon.glyphicon-send
+            div.panel-conversation
+                ul.nav.conversation-list
+                    each group in allGroup
+                        li
+                            a(href="?groupName="+group.name)
+                                span.group-name #{group.name}
+                                span.group-recent #{group.users.length} users in this conversation
+            if groupName && joinedStatus
+                div.message-box
+                    each message in messages
+                        if message.user._id+'' == user._id+''
+                            div.message.message-me
+                                span.message-sender #{message.user.name} | #{toDD(message.createdAt)}
+                                span.message-text #{message.text}
+                        else
+                            div.message.message-friend
+                                span.message-sender #{message.user.name} | #{toDD(message.createdAt)}
+                                span.message-text #{message.text}
+            if !groupName
+                div.whole-advice.welcome
+                    h2 Welcome!
+                    p Conversation list is located at the left of your screen.
+            if groupName && !joinedStatus
+                div.whole-advice.join-advice
+                    h2 You haven't join this conversation yet
+                    form(method="post", action="join/group")
+                        input(type="hidden", value=groupName, name="group_name")
+                        button.btn.btn-primary.btn-lg(type="submit")
+                            span.glyphicon.glyphicon-log-in
+                            |  Join this conversation
+        div#modal-add-conversation.modal.fade(tabindex="-1", role="dialog", aria-labelledby="modal-add-conversation-label")
+            div.modal-dialog(role="document")
+                div.modal-content
+                    div.modal-header
+                        button.close(type="button", data-dismiss="modal", aria-label="Close")
+                            span(aria-hidden="true") &times;
+                        h4#modal-add-conversation-label.modal-title Create new conversation
+                    div.modal-body
+                        div#alert-add-conversation.alert.alert-danger
+                            span.glyphicon.glyphicon-exclamation-sign
+                            |  
+                            span#alert-add-conversation-text
+                        form#form-add-conversation
+                            div.form-group
+                                input#input-conversation-name.form-control(autocomplete="off", type="text",name="new_group", placeholder="Tell your conversation name")
+                    div.modal-footer
+                        button.btn.btn-default(type="button", data-dismiss="modal") Cancel
+                        button#modal-add-conversation-submit.btn.btn-primary(type="button") Create
+        div#modal-leave-conversation.modal.fade(tabindex="-1", role="dialog", aria-labelledby="modal-leave-conversation-label")
+            div.modal-dialog(role="document")
+                div.modal-content
+                    div.modal-header
+                        button.close(type="button", data-dismiss="modal", aria-label="Close")
+                            span(aria-hidden="true") &times;
+                        h4#modal-leave-conversation-label.modal-title Leave conversation
+                    div.modal-body Do you want to leave this conversation?
+                    div.modal-footer
+                        button.btn.btn-default(type="button", data-dismiss="modal") Cancel
+                        button#modal-leave-conversation-submit.btn.btn-primary(type="button") Confirm
+        script(src="js/jquery.min.js")
+        script(src="js/bootstrap.min.js")
+        script(src="js/socket.io.js")
+        script.
+            var socket = io();
+            if('#{groupName}'!='')
+                socket.emit('subscribe', '#{groupName}');
+            
+            $(document).ready(function(){
+                $('#message-textbox').focus();
+                $('[data-toggle="tooltip"]').tooltip();
+                $("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
+            });
+            
+            $('#modal-add-conversation').on('shown.bs.modal', function(){
+                $('#input-conversation-name').focus();
+            });
+            
+            $('#modal-add-conversation').on('hidden.bs.modal', function(){
+                $('#alert-add-conversation').hide();
+                $('#input-conversation-name').val('');
+            });
+            
+            $('#modal-add-conversation-submit').click(function(){
+                $('#form-add-conversation').submit();
+            });
+            
+            $('#modal-leave-conversation-submit').click(function(){
+                window.location.href = 'leave/group?group_name=#{groupName}';
+            });
+            
+            $('#message-text-form').submit(function(){
+                // TODO: socket emit
+                if('#{groupName}' != ''){
+                    $.ajax({
+                        url: "/send/message",
+                        data: {groupName:'#{groupName}', message:$('#message-textbox').val()},
+                        method: "post"
+                    })
+                    .done(function(data){
+                        if(data.status == 'not login')
+                            window.location.href = 'login';
+                        else if(data.status == 'group not exist')
+                            window.location.href = '/';
+                        else if(data.status == 'ok')
+                            socket.emit('send', {group:'#{groupName}', user: data.user, message: data.message});
+                    });
+                }
+                $('#message-textbox').val('');
+                return false;
+            });
+            socket.on('chat', function(data) {
+                // แสดงผลข้อความที่ได้มาออกมาทางหน้าจอ
+                console.log(data);
+                var date = new Date(data.message.createdAt);
+                var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+                if('#{user._id}' == data.user._id+'')
+                    $('.message-box').append($('<div class="message message-me">')
+                    .append($('<span class="message-sender">').text(data.user.name+' | '+dd))
+                    .append($('<span class="message-text">').text(data.message.text)));
+                else
+                    $('.message-box').append($('<div class="message message-friend">')
+                    .append($('<span class="message-sender">').text(data.user.name+' | '+dd))
+                    .append($('<span class="message-text">').text(data.message.text)));
+                $("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
+            });
+            $('#form-add-conversation').submit(function(e){
+                e.preventDefault();
+                $('#alert-add-conversation').hide();
+                $.ajax({
+                    url: "/create/group/",
+                    data: {new_group:$('#input-conversation-name').val()},
+                    method: "post"
+                })
+                .done(function(data){
+                    if(data.status == 'already exist') {
+                        $('#alert-add-conversation-text').html('This conversation name is already exist. Please try another name.');
+                        $('#alert-add-conversation').show();
+                    }
+                    else if(data.status == 'not login') {
+                        $('#alert-add-conversation-text').html('Please login first.');
+                        $('#alert-add-conversation').show();
+                    }
+                    else if(data.status == 'created')
+                        window.location.href = '';
+                });
+            });

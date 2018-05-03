@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html>
+<title>BOO BOO LINE</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href='https://fonts.googleapis.com/css?family=RobotoDraft' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/regular.css" integrity="sha384-A1EvA/hysGbYDv2FEiUKrI6X29Z6pC7/MUAyRiGH2TDHQxH/dYlPjAp9hckP+hpB" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/fontawesome.css" integrity="sha384-JrS00hUlxRW4kN+mi4N+nYNvl2brci75f8X1VBQh/DbA/XIA2u8i3LLLxB68iE3R" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/solid.css" integrity="sha384-XmxkDmPXx/Hc19URgeNR9YRtH392uNsw0o7nb6dfZieETZuPI2mz5E41KhXKMqWQ" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/fontawesome.css" integrity="sha384-JrS00hUlxRW4kN+mi4N+nYNvl2brci75f8X1VBQh/DbA/XIA2u8i3LLLxB68iE3R" crossorigin="anonymous">
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "RobotoDraft", "Roboto", sans-serif}
+.w3-bar-block .w3-bar-item {padding: 25px}
+
+.chat {
+  height: 85px;
+  position: relative;
+}
+
+.chat i {
+  font-size: 75px;
+  position: absolute;
+}
+
+.container {
+    border: 0px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 15px 0;
+}
+
+.nameright {
+    border: 20px solid #dedede;
+}
+
+.darker {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.container::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.container img {
+    float: left;
+    max-width: 60px;
+    width: 100%;
+    margin-right: 20px;
+    border-radius: 50%;
+}
+
+.container img.right {
+    float: right;
+    margin-left: 20px;
+    margin-right:0;
+}
+
+.time-right {
+    float: right;
+    color: #aaa;
+}
+
+.time-left {
+    float: left;
+    color: #999;
+}
+
+</style>
+
+<!-- Side Navigation -->
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-white w3-top w3-animate-left w3-card acontainer" style="z-index:3;width:180px;" id="mySidebar">
+  <a class="w3-bar-item w3-border-bottom w3-large"><i class="fa fa-user w3-margin-right"></i>Client</a>
+  <a href="#" class="w3-bar-item w3-button" onclick="document.getElementById('id03').style.display='block'"><i class="fa fa-comment w3-margin-right"></i>Group Chat</a>
+  <a href="#" class="w3-bar-item w3-button" onclick="document.getElementById('id01').style.display='block'"><i class="fas fa-sign-in-alt w3-margin-right"></i>Join Group</a>
+  <a href="#" class="w3-bar-item w3-button" onclick="document.getElementById('id02').style.display='block'"><i class="fas fa-plus-circle w3-margin-right"></i>Create Group</a>
+  <a href="#" class="w3-bar-item w3-button"><i class="fa fa-times-circle w3-margin-right"></i>Logout</a>
+</nav>
+
+<!-- Modal that pops up when you click on "New Message" -->
+<div id="id01" class="w3-modal" style="z-index:4">
+  <div class="w3-modal-content w3-animate-zoom">
+    <div class="w3-container w3-padding w3-blue">
+       <span onclick="document.getElementById('id01').style.display='none'"
+       class="w3-button w3-blue w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
+      <h2>Join Group</h2>
+    </div>
+    <div class="w3-panel">
+      <label>Group Name</label>
+      <input class="w3-input w3-border w3-margin-bottom" type="text">
+      <div class="w3-section">
+        <a></a>
+        <a class="w3-button w3-light-grey" onclick="document.getElementById('id01').style.display='none'">Join  <i class="fas fa-sign-in-alt w3-margin-right"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<body>
+
+<!-- Create Group -->
+<div id="id02" class="w3-modal" style="z-index:4">
+  <div class="w3-modal-content w3-animate-zoom">
+    <div class="w3-container w3-padding w3-blue">
+       <span onclick="document.getElementById('id02').style.display='none'"
+       class="w3-button w3-blue w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
+      <h2>Create Group</h2>
+    </div>
+    <div class="w3-panel">
+      <label>New Group Name</label>
+      <input class="w3-input w3-border w3-margin-bottom" type="text">
+      <div class="w3-section">
+        <a></a>
+        <a class="w3-button w3-light-grey" onclick="document.getElementById('id02').style.display='none'">Create  <i class="fas fa-plus-circle w3-margin-right"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Group Name -->
+<div id="id03" class="w3-modal" style="z-index:4">
+  <div class="w3-modal-content w3-animate-zoom">
+    <div class="w3-container w3-padding w3-blue">
+       <span onclick="document.getElementById('id03').style.display='none'"
+       class="w3-button w3-blue w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
+      <h2>Select Group</h2>
+    </div>
+        <a class="w3-bar-item w3-button w3-mobile" onclick="document.getElementById('id03').style.display='none'">Group1</a>
+        <a class="w3-bar-item w3-button w3-mobile" onclick="document.getElementById('id03').style.display='none'">Group2</a>
+        <a class="w3-bar-item w3-button w3-mobile" onclick="document.getElementById('id03').style.display='none'">Group3</a>
+  </div>
+</div>
+
+<!-- Overlay effect when opening the side navigation on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close Sidemenu" id="myOverlay"></div>
+
+<!-- Page content -->
+<div class="w3-main" style="margin-left:200px; width:84%;">
+  <i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
+
+  <header class="w3-container w3-xlarge">
+    <p class="w3-left">Group Name</p>
+    <a href="#" class="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Block</a>
+    <a href="#" class="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Get Unread</a>
+  </header>
+
+  <div class="container">
+    <p class="w3-right">Hello. How are you today?</p>
+    <span class="time-right">11:00</span>
+    <span class="time-right">MYNAME</span>
+  </div>
+  <div class="container darker">
+    <p class="w3-left">Hey! I'm fine. Thanks for asking!</p>
+    <span class="time-left">OTHERNAME</span>
+    <span class="time-left">11:01</span>
+  </div>
+
+  <div class='text'>
+    <input id='m' style="width:93%" type="text" placeholder="  Type message..." /><button class="w3-blue w3-button" onclick="send()">Send</button>
+  </div>
+
+  <!-- <div class="chat">
+      <i ></i>
+      <input type="text" placeholder="Type your message...">
+      <button>Send</button>
+  </div> -->
+
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io();
+
+function send(){
+		var text_box = document.getElementById('m');
+		socket.emit('chat message', text_box.value)
+		document.getElementById('m').value = '';
+		
+		
+		
+		<!-- $('div.text').submit(function(){ -->
+		  
+		  <!-- socket.emit('chat message',$('#m').val()); -->
+		  <!-- $('#m').val(''); -->
+		  <!-- return false; -->
+		<!-- }); -->
+			
+		
+		<!-- socket.on('chat message', function(msg){ -->
+			<!-- $('#messages').append($('<li>').text(msg)); -->
+		<!-- }); -->
+}
+
+
+</script>
+
+<script>
+var openTab = document.getElementById("firstTab");
+openTab.click();
+</script>
+
+
+</body>
+</html>

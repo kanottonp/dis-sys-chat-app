@@ -17,8 +17,15 @@ mongoose.connect('mongodb://localhost:27017/boobooline')
 
 
 const app = express()
+<<<<<<< HEAD
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+=======
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+const User = require('./models/user.js');
+const Message = require('./models/message.js');
+>>>>>>> b926b007c5f8940f71eb45735cdc0e571bca179b
 
 var server = app.listen(port, function() {
     console.log('Listening on port ' + port);
@@ -27,7 +34,7 @@ var server = app.listen(port, function() {
 var io = require('socket.io').listen(server);
 
 app.get('/', function(req, res) {
-    res.sendfile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/public/index.html');
 });
 
 app.post('/logins', function(req, res) {
@@ -66,9 +73,37 @@ app.post('/logins', function(req, res) {
 })
 
 io.on('connection', function(socket) {
+<<<<<<< HEAD
     console.log("a user connected")
     socket.on('chat message', function(msg) {
         console.log('MSG : ' + msg);
         io.emit('chat message', msg);
+=======
+    console.log("a user connected");
+	
+    // socket.on('chat message', function(msg) {
+        // console.log('MSG : ' + msg.text);
+		// io.emit('chat message', msg);
+    // });
+	
+	socket.on('send', function(msg) {
+		console.log('sending message');
+		console.log(msg);
+		var newMsg = new Message();
+		var thisUser = new User();
+		thisUser.username = msg.user;
+		newMsg.user = thisUser;
+		newMsg.text = msg.message;
+		newMsg.createdAt = new Date();
+		// newMsg.save(function(err) {
+			// if (err){
+				// console.log('Error in Saving user: '+err);  
+				// throw err;  
+			// }
+			// console.log('User Registration succesful');    
+			// return done(null, newUser);
+		// });
+		io.emit('chat message', newMsg);
+>>>>>>> b926b007c5f8940f71eb45735cdc0e571bca179b
     });
 });

@@ -126,7 +126,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "RobotoDraft", "Roboto", sans-serif}
 
 <!-- Group Name -->
 <div id="id03" class="w3-modal" style="z-index:4">
-  <div class="w3-modal-content w3-animate-zoom">
+  <div id="my_groups" class="w3-modal-content w3-animate-zoom">
     <div class="w3-container w3-padding w3-blue">
        <span onclick="document.getElementById('id03').style.display='none'"
        class="w3-button w3-blue w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
@@ -155,10 +155,10 @@ html,body,h1,h2,h3,h4,h5 {font-family: "RobotoDraft", "Roboto", sans-serif}
 
 <div class="w3-main" style="background: #ffffff;padding: 3px;margin-left:200px; width:84%;position: fixed; bottom: 0;" >
   <div class='text'>
-    <input id='m' style="width:93%" type="text" placeholder="  Type message..." /><button class="w3-blue w3-button" onclick="send()">Send</button>
+    <input id='m' style="width:93%" type="text" placeholder="  Type message..." style ="margin-right:0.5%;"/><button class="w3-blue w3-button" onclick="send()" style = "padding:10px;border-radius:20%;">Send</button>
   </div>
   <div class='userField'>
-    <input id='username' style="width:10%" type="text" placeholder="  Type username..." /><button class="w3-blue w3-button" onclick="save()">Save</button>
+    <input id='username' style="width:10%" type="text" placeholder="  Type username..." style ="margin-right:0.5%;"/><button class="w3-blue w3-button" onclick="save()" style = "padding: 10px;border-radius:20%;">Save</button>
   </div>
 </div>
 
@@ -196,17 +196,13 @@ function save(){
 function send(){
 		//var text_box = document.getElementById('m');
 		//socket.emit('chat message', text_box.value);
-		var data =  {user : current_username, message: $('#m').val()};
-		socket.emit('send', {user: data.user, message: data.message});
-		<!-- var thisUser = new User(); -->
-		<!-- thisUser.username = current_username; -->
-		<!-- var newMsg = new Message(); -->
-		<!-- newMsg.user = thisUser; -->
-		<!-- newMsg.text = $('#m').val(); -->
-		<!-- socket.emit('send', newMsg); -->
-		
-		document.getElementById('m').value = '';
-		$('#m').focus();
+		if ($('#m').val().trim() !== ''){
+			var data =  {user : current_username, message: $('#m').val()};
+			socket.emit('send', {user: data.user, message: data.message});
+			
+			document.getElementById('m').value = '';
+			$('#m').focus();
+		}
 }
 
 

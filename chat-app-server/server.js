@@ -17,10 +17,8 @@ mongoose.connect('mongodb://localhost:27017/boobooline')
 
 
 const app = express()
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
-const User = require('./models/user.js');
-const Message = require('./models/message.js');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 var server = app.listen(port, function() {
     console.log('Listening on port ' + port);
@@ -32,7 +30,7 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname + '/public/index.html');
 });
 
-app.post('/logins', function(req, res) {
+app.post('/login', function(req, res) {
 
     var username = req.body.username
 

@@ -25,7 +25,7 @@ io.on('connection', function(socket){
 	io.sockets.in(data.group).emit('chat', { 'user':data.user, 'message':data.message });
 	}); */
   
-  
+  //qweqwewqewqewqeqwe
 });
 
 http.listen(3000, function(){

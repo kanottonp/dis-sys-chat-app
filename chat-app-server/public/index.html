@@ -142,7 +142,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "RobotoDraft", "Roboto", sans-serif}
 <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close Sidemenu" id="myOverlay"></div>
 
 <!-- Page content -->
-<div class="w3-main" style="margin-left:200px; width:84%;">
+<div id="pagechat" class="w3-main" style="margin-left:200px; width:84%;">
   <i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
 
   <header class="w3-container w3-xlarge">
@@ -161,6 +161,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "RobotoDraft", "Roboto", sans-serif}
     <span class="time-left">OTHERNAME</span>
     <span class="time-left">11:01</span>
   </div>
+  <div id="newchat" class="container">
+	
+   <!--  <p class="w3-right">Hello. How are you today?</p>
+    <span class="time-right">11:00</span>
+    <span class="time-right">MYNAME</span> -->
+  </div>
 
   <div class='text'>
     <input id='m' style="width:93%" type="text" placeholder="  Type message..." /><button class="w3-blue w3-button" onclick="send()">Send</button>
@@ -176,14 +182,33 @@ html,body,h1,h2,h3,h4,h5 {font-family: "RobotoDraft", "Roboto", sans-serif}
 
 
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
 var socket = io();
 
+socket.on('connect', function () {
+    socket.send('hi');
+
+	socket.on('chat message', function(msg){	
+				$('#newchat').append($('<p>' + msg + '</p>'));
+	});
+});
+
+
 function send(){
 		var text_box = document.getElementById('m');
-		socket.emit('chat message', text_box.value)
+		socket.emit('chat message', text_box.value);
+		
+		
 		document.getElementById('m').value = '';
-		//eeeee
+
+		<!-- // เมื่อ form ถูก submit ให้ทำอะไร?  -->
+		<!-- $('#chat-form').submit(function() { -->
+			<!-- // ส่งข้อความที่พิมพ์มาไปยัง server ผ่านทางท่อชื่อ "chat" -->
+			<!-- socket.emit('send', {message:$('#chat-message').val(),group:'#{group.name}',user:'#{user.name}'}); -->
+
+			<!-- return false; -->
+		<!-- }); -->
 		
 		
 		<!-- $('div.text').submit(function(){ -->
@@ -194,9 +219,7 @@ function send(){
 		<!-- }); -->
 			
 		
-		<!-- socket.on('chat message', function(msg){ -->
-			<!-- $('#messages').append($('<li>').text(msg)); -->
-		<!-- }); -->
+
 }
 
 

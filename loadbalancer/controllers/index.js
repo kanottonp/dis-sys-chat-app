@@ -62,7 +62,7 @@ postPaths.map(path => {
 getPaths.map(path => {
   router.get(path, function (req, res, next) {
     // ACTIVE PRIMARY BACKEND
-    console.log('fm', req.query);
+    console.log('nottyking', req.query);
     axios.get(ip.primaryBackend + path + "/" + req.query.gid)
       .then(function (response) {
         if (activeBackend === 2) {

@@ -22,7 +22,17 @@ app.use(cors())
 
 // Database Access
 
-// List of this SPAGETTI API
+/*                                         --* List of this SPAGETTI API *--
+
+    GET GROUP BY ID | Path : '/group/:groupid' , Params : ':groupid' , Body : -
+    GET USER BY USERNAME | Path : '/user/:username' , Params : ':username' , Body : -
+    GET ALL GROUP | Path : '/findgroup', Param: - , Body: -
+
+    POST LOGIN | Path : '/login' , Params : - , Body : { 'username' : username }
+    POST CREATE GROUP | Path : '/creategroup' , Params : - , Body : { 'username' : username, 'groupname' : groupname }
+    POST JOIN GROUP BY NAME | Path : '/joingroup' , Params : - , Body : { 'username' : username, 'groupname' : groupname }
+    POST LEAVE GROUP BY NAME | Path : '/leavegroup' , Params : - , Body : { 'username' : username, 'groupname' : groupname }
+    POST SEND MESSAGE | Path : '/send/message' , Params : - , Body : { 'username' : username, 'groupid' : groupid, 'message' : message } */
 
 
 

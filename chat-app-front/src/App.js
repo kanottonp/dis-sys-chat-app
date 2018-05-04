@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Login from './Login'
-import Main from './Main'
+import Login from './page/login'
+import Main from './page/main'
 import { Route,Link,NavLink } from 'react-router-dom'
 
 class App extends Component {

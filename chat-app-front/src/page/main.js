@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import $ from 'jquery';
 
+import Cookies from 'universal-cookie';
+import IpList from '../config/ip';
+import axios from 'axios';
 
+var $ = require('jquery')
+const cookies = new Cookies();
 
 // const io = require('socket.io')();
 // var socket = io();
@@ -9,7 +13,7 @@ import $ from 'jquery';
 // socket.on('connect', function () {
 
 // 	socket.on('chat message', function(msg){
-				
+
 // 				console.log(msg.createdAt);
 // 				var date = new Date(msg.createdAt);
 //                 var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
@@ -22,8 +26,8 @@ import $ from 'jquery';
 // 				}
 // 				$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
 // 	});
-	
-	
+
+
 // });
 
 // function save(){
@@ -36,7 +40,7 @@ import $ from 'jquery';
 // 		if ($('#m').val().trim() !== ''){
 // 			var data =  {user : current_username, message: $('#m').val()};
 // 			socket.emit('send', {user: data.user, message: data.message});
-			
+
 // 			document.getElementById('m').value = '';
 // 			$('#m').focus();
 // 		}
@@ -46,7 +50,15 @@ import $ from 'jquery';
 // openTab.click();
 
 export default class Main extends Component {
+	constructor(props) {
+		super(props);
+		axios.post(IpList.loadBalancer + "/login/",cookies.get('username'))
+		.then((response) => {
+			
+		}).catch((err) => {
 
+		})
+	}
 
 	createGroup() {
 		document.getElementById('id02').style.display='block';
@@ -115,7 +127,7 @@ export default class Main extends Component {
       						<h2>Create Group</h2>
     					</div>
     					<div className="w3-panel">
-      						<label>New Group Name</label>
+      						<label>New Group Name : </label>
       						<input className="w3-input w3-border w3-margin-bottom" type="text" />
       						<div className="w3-section">
         						<a></a>
@@ -124,7 +136,7 @@ export default class Main extends Component {
     					</div>
   					</div>
 				</div>
-			
+
 				<div id="id03" className="w3-modal" style={{zIndex:"4"}}>
   					<div id="my_groups" className="w3-modal-content w3-animate-zoom">
     					<div className="w3-container w3-padding w3-blue">
@@ -139,12 +151,12 @@ export default class Main extends Component {
 				</div>
 
 				<div className="w3-overlay w3-hide-large w3-animate-opacity" onClick="w3_close()" style={{cursor:"pointer"}} title="Close Sidemenu" id="myOverlay"></div>
-			
+
 				<div id="pagechat" className="w3-main" style={{marginBottom:"100px",marginLeft:"200px",marginTop:"100px",width:"84%"}}>
   					<i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
 
   					<header className="w3-container w3-xlarge" style={{position:"fixed",top:"0",background:"#ffffff",marginBottom : "200px", width:"88vw"}}>
-    					<p className="w3-left">Group Name</p>
+    					<p className="w3-left">Group Name {cookies.get('username')}</p>
     					<a href="#" className="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Block</a>
     					<a href="#" className="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Get Unread</a>
   					</header>

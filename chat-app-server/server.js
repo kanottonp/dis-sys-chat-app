@@ -18,7 +18,7 @@ mongoose.connect('mongodb://localhost:27017/boobooline')
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors)
+// app.use(cors)
 
 //Database Access
 
@@ -47,18 +47,18 @@ app.post('/login', function(req, res) {
         if (!err) {
             if (!result) {
                 // Create and Save it
-                newUser.save(function(err) {
+                newUser.save(function(err, resultt) {
                     if (err) {
                         console.log(err);
                         res.status(500).send();
                     } else {
                         console.log('new user');
-                        res.status(200).send("Registered")
+                        res.status(200).json(resultt)
                     }
                 })
             } else {
                 console.log('existing user');
-                res.status(200).send("Logging in")
+                res.status(200).json(result)
             }
 
         } else {
@@ -68,6 +68,9 @@ app.post('/login', function(req, res) {
     });
 
 });
+
+
+
 
 app.get('/findgroup', function(req, res) {
     console.log('finding group')
@@ -87,7 +90,7 @@ app.post('/creategroup', function(req, res) {
         var userid;
         if (!err) {
             if (!result) {
-                res.status(500).send("Username is not existed").redirect('/')
+                res.status(500).send("Username is not existed")
             } else {
                 // console.log(result);
                 console.log("Passed")
@@ -164,19 +167,76 @@ app.post('/joingroup', function(req, res) {
             }
         }).then((result) => {
             var userid = result._id
-            Group.findOneAndUpdate({ '_id': groupid }, { '$push': { 'groups': groupid } }, (err, resultt) => {
+            Group.findOneAndUpdate({ '_id': groupid }, { '$push': { 'users': userid } }, (err, resultt) => {
                 if (!err) {
                     if (!resultt) {
                         res.status(500).send("Group is not existed")
                     } else {
                         res.status(200).send("Join Group Success")
                     }
-
+                } else {
+                    console.log(err)
+                    res.status(500).send("Internal Error")
                 }
             })
         })
     }
 })
+
+app.post('/leavegroup', function(req, res) {
+    var username = req.body.username
+    var groupname = req.body.groupname
+
+    User.findOne({ 'username': username }, (err, result) => {
+        if (!err) {
+            if (!result) {
+                res.status(500).send("User not found")
+            } else {
+                var userid = result._id
+                Group.findOneAndUpdate({ 'name': groupname }, { '$pull': { 'users': userid } }, (errr, resultt) => {
+                    if (!err) {
+                        if (!resultt) {
+                            res.status(500).send("Group is not existed")
+                        } else {
+                            console.log("Group leaves User")
+                        }
+                    } else {
+                        console.log(err)
+                        res.status(500).send("Internal Error")
+                    }
+                })
+            }
+        }
+    })
+
+    Group.findOne({ 'name': groupname }, (err, result) => {
+        if (!err) {
+            if (!result) {
+                res.status(500).send("Group not found")
+            } else {
+                var groupid = result._id
+                User.findOneAndUpdate({ 'username': username }, { '$pull': { 'groups': groupid } }, (errr, resultt) => {
+                    if (!err) {
+                        if (!resultt) {
+                            res.status(500).send("User is not existed")
+                        } else {
+                            console.log('User Leaves Group')
+                            res.status(200).send("Leaves Group Success")
+                        }
+                    } else {
+                        console.log(err)
+                        res.status(500).send("Internal Error")
+                    }
+                })
+            }
+        }
+    })
+
+})
+
+
+
+
 
 
 

@@ -1,5 +1,123 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+@import url(https://fonts.googleapis.com/css?family=Karla);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:300);
+
+.wrap{
+  padding:120px 0;
+  font-size:62px;
+  color:#888;
+  width:400px;
+  font-family: "RobotoDraft", "Roboto", sans-serif;
+  margin:0 auto;
+  text-align:center;
+}
+
+.loginput{
+  font-family: "RobotoDraft", "Roboto", sans-serif;
+  font-weight:300;
+  border:0;
+  border-bottom:1px solid #0080ff;
+  width:100%;
+  height:36px;
+  font-size:26px;
+}
+
+.loginput:focus{
+  outline:none;
+  box-shadow:none;
+  background:#eff5ff;
+}
+
+.logbutton {
+  border:0;
+  background:transparent;
+  padding:15px;
+  margin-top:50px;
+  position:relative;
+  outline:0;
+  font-size: 0.4em;
+}
+.buttonafter:after{
+content:'';
+display:block;
+position:absolute;
+top:8px;
+left:100%; /*should be set to 100% */
+width:0;
+height:0;
+border-color: transparent transparent transparent #14a03d; /*border color should be same as div div background color*/
+border-style: solid;
+border-width: 5px;
+
+}
+
+.forgot{
+  background:#a0a0a0;
+  color:#fff;
+  float:left;
+}
+
+.login{
+  background:#0080ff;
+  color:#fff;
+  float:center;
+}
+
+html,body,h1,h2,h3,h4,h5 {font-family: "RobotoDraft", "Roboto", sans-serif}
+.w3-bar-block .w3-bar-item {padding: 25px}
+
+.chat {
+  height: 85px;
+  position: relative;
+}
+
+.chat i {
+  font-size: 75px;
+  position: absolute;
+}
+
+.container {
+    border: 0px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 15px 0;
+}
+
+.nameright {
+    border: 20px solid #dedede;
+}
+
+.darker {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.container::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.container img {
+    float: left;
+    max-width: 60px;
+    width: 100%;
+    margin-right: 20px;
+    border-radius: 50%;
+}
+
+.container img.right {
+    float: right;
+    margin-left: 20px;
+    margin-right:0;
+}
+
+.time-right {
+    float: right;
+    color: #aaa;
+}
+
+.time-left {
+    float: left;
+    color: #999;
 }

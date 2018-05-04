@@ -94,7 +94,7 @@ export default class Main extends Component {
 	}
 
 	render() {
-
+		var groups = cookies.get('groups');
 		var current_username = cookies.get('username');
 		var socket = io('http://localhost:3333');
 
@@ -132,12 +132,21 @@ export default class Main extends Component {
 			window.location = '/';
 			cookies.set('isLogin', 'false');
 			cookies.set('username','');
+			cookies.set('groups','[]');
 		}
 
-		function joinGroup(){
+		async function joinGroup(){
 			var data =  {username : current_username, group : $('#group_name').val()};
-			socket.emit('join group',{username : data.username, group: data.group});
-			console.log(data);
+			var status = (await axios.post("http://localhost:2222/",{username:data.username,groupid:data.group}));
+			console.log("Join group:",status);
+			if(status==200){
+				console.log("joining success!");
+			}
+			else{
+				alert("");
+			}
+			//socket.emit('join group',{username : data.username, group: data.group});
+			//console.log(data);
 			document.getElementById('id01').style.display='none';
 		}
 
@@ -148,16 +157,35 @@ export default class Main extends Component {
 			document.getElementById('id02').style.display='none';
 		}
 
+		function selectGroup(){
+			document.getElementById('id03').style.display='none';
+		}
+		
+		function listGroups(){
+
+			for (var i=0;i<groups.length;i++){
+				var group_name = groups[i].name;
+				var group_id = groups[i]._id;
+				$('#my_groups').append($('<a class="w3-bar-item w3-button w3-mobile">' + {group_name} + ' : ' + {group_id} +'</a>'));
+			}
+			$('#my_groups').on('click','a', function(){
+				selectGroup();
+			});
+			document.getElementById('id03').style.display='block';
+		}
+
 		var navStyle = {
 			zIndex:"3",
 			width:"180px",
 		};
+		
+
 
 		return(
 			<div>
 				<nav className="w3-sidebar w3-bar-block w3-collapse w3-white w3-top w3-animate-left w3-card acontainer" style={navStyle} id="mySidebar">
-  					<a className="w3-bar-item w3-border-bottom w3-large"><i className="fa fa-user w3-margin-right"></i>Client</a>
-  					<a href="#" className="w3-bar-item w3-button" onClick={this.createChat.bind(this)}><i className="fa fa-comment w3-margin-right"></i>Group Chat</a>
+	<a className="w3-bar-item w3-border-bottom w3-large"><i className="fa fa-user w3-margin-right"></i>{current_username}</a>
+  					<a href="#" className="w3-bar-item w3-button" onClick={listGroups}><i className="fa fa-comment w3-margin-right"></i>Group Chat</a>
   					<a href="#" className="w3-bar-item w3-button" onClick={this.createJoin.bind(this)}><i className="fas fa-sign-in-alt w3-margin-right"></i>Join Group</a>
   					<a href="#" className="w3-bar-item w3-button" onClick={this.createGroup.bind(this)}><i className="fas fa-plus-circle w3-margin-right"></i>Create Group</a>
   					<a href="#" className="w3-bar-item w3-button" onClick={logout}><i className="fa fa-times-circle w3-margin-right"></i>Logout</a>
@@ -206,11 +234,8 @@ export default class Main extends Component {
        						className="w3-button w3-blue w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
       						<h2>Select Group</h2>
     					</div>
-						'''append this more'''
-        				<a className="w3-bar-item w3-button w3-mobile" onClick={this.closeChat.bind(this)}>Group1</a>
-        				<a className="w3-bar-item w3-button w3-mobile" onClick={this.closeChat.bind(this)}>Group2</a>
-        				<a className="w3-bar-item w3-button w3-mobile" onClick={this.closeChat.bind(this)}>Group3</a>
   					</div>
+
 				</div>
 
 				<div className="w3-overlay w3-hide-large w3-animate-opacity" onClick="w3_close()" style={{cursor:"pointer"}} title="Close Sidemenu" id="myOverlay"></div>
@@ -219,7 +244,6 @@ export default class Main extends Component {
   					<i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
 
   					<header className="w3-container w3-xlarge" style={{position:"fixed",top:"0",background:"#ffffff",marginBottom : "200px", width:"88vw"}}>
-    					<p className="w3-left">Username : {cookies.get('username')}</p>
 						<p className="w3-left w3-margin-left">Currently display Group : Group_NAME</p>
     					<a href="#" className="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Block</a>
     					<a href="#" className="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Get Unread</a>

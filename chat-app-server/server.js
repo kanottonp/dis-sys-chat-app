@@ -20,18 +20,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors())
 
-//Database Access
+// Database Access
+
+/*                                         --* List of this SPAGETTI API *--
+
+    GET GROUP BY ID | Path : '/group/:groupid' , Params : ':groupid' , Body : -
+    GET USER BY USERNAME | Path : '/user/:username' , Params : ':username' , Body : -
+    GET ALL GROUP | Path : '/findgroup', Param: - , Body: -
+
+    POST LOGIN | Path : '/login' , Params : - , Body : { 'username' : username }
+    POST CREATE GROUP | Path : '/creategroup' , Params : - , Body : { 'username' : username, 'groupname' : groupname }
+    POST JOIN GROUP BY NAME | Path : '/joingroup' , Params : - , Body : { 'username' : username, 'groupname' : groupname }
+    POST LEAVE GROUP BY NAME | Path : '/leavegroup' , Params : - , Body : { 'username' : username, 'groupname' : groupname }
+    POST SEND MESSAGE | Path : '/send/message' , Params : - , Body : { 'username' : username, 'groupid' : groupid, 'message' : message } */
+
+
 
 var server = app.listen(port, function() {
     console.log('Listening on port ' + port);
-});
-
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/public/index.html');
-});
-
-app.get('/landing', function(req, res) {
-    res.sendFile(__dirname + '/public/login.html');
 });
 
 app.post('/login', function(req, res) {
@@ -200,7 +206,7 @@ app.post('/creategroup', function(req, res) {
 
 app.post('/joingroup', function(req, res) {
     var username = req.body.username
-    var groupid = req.body.groupid
+    var groupname = req.body.groupname
 
     if (username.trim() === '') {
         return (
@@ -210,34 +216,46 @@ app.post('/joingroup', function(req, res) {
         )
     }
 
-    if (username !== null && groupid !== null) {
-        User.findOneAndUpdate({ 'username': username }, { '$push': { 'groups': groupid } }, (err, result) => {
+    if (username !== null && groupname !== null) {
+        Group.findOne({ 'name': groupname }, (err, resultt) => {
             if (!err) {
-                if (!result) {
-                    res.status(500).send("Username is not existed")
+                if (!resultt) {
+                    return (res.status(404).send("Group Not Found"))
                 } else {
-                    // console.log(result);
-                    console.log("Passed")
+                    console.log("Found Group")
                 }
-            } else {
-                console.log(err);
-                res.status(500).send();
             }
-        }).then((result) => {
-            var userid = result._id
-            Group.findOneAndUpdate({ '_id': groupid }, { '$push': { 'users': userid } }, (err, resultt) => {
+        }).then((resultt) => {
+            var groupid = resultt._id
+            User.findOneAndUpdate({ 'username': username }, { '$addToSet': { 'groups': groupid } }, (err, result) => {
                 if (!err) {
-                    if (!resultt) {
-                        res.status(500).send("Group is not existed")
+                    if (!result) {
+                        res.status(500).send("Username is not existed")
                     } else {
-                        res.status(200).send("Join Group Success")
+                        // console.log(result);
+                        console.log("Passed")
                     }
                 } else {
-                    console.log(err)
-                    res.status(500).send("Internal Error")
+                    console.log(err);
+                    res.status(500).send();
                 }
+            }).then((result) => {
+                var userid = result._id
+                Group.findOneAndUpdate({ '_id': groupid }, { '$push': { 'users': userid } }, (err, resultt) => {
+                    if (!err) {
+                        if (!resultt) {
+                            res.status(500).send("Group is not existed")
+                        } else {
+                            res.status(200).json(resultt)
+                        }
+                    } else {
+                        console.log(err)
+                        res.status(500).send("Internal Error")
+                    }
+                })
             })
         })
+
     }
 })
 
@@ -300,9 +318,62 @@ app.post('/leavegroup', function(req, res) {
 
 })
 
-app.post('send/message', function(req, res) {
+app.post('/send/message', function(req, res) {
     var username = req.body.username
-    var username = req.body.username
+    var groupid = req.body.groupid
+    var message = req.body.message
+    var userid;
+    var lastmessages = -99;
+
+
+    (async() => {
+
+        var userid = (await User.findOne({ 'username': username }))._id;
+        var lastmessages = (await Group.findOne({ '_id': groupid })).lastmessages;
+
+        console.log(userid)
+        console.log(lastmessages)
+
+        var mes = new Message()
+        mes.user = userid
+        mes.text = message
+        mes.number = lastmessages + 1
+        mes.group = groupid
+
+        var result = (await new Promise((resolve, reject) => {
+            mes.save((err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send("Error When Save");
+                } else {
+                    console.log('New Message');
+                    // res.status(200).json(result)
+                }
+                resolve(result);
+            })
+        }));
+
+        Group.findOneAndUpdate({ '_id': groupid }, {
+            '$push': { 'messages': result._id },
+            '$set': { 'lastmessages': lastmessages + 1 }
+        }, (err, result) => {
+            if (!err) {
+                if (!result) {
+                    return (res.status(500).send("Can't Send Message"))
+                } else {
+                    console.log('Send Message')
+                    return (res.status(200).json(result))
+                }
+            } else {
+                console.log(err)
+                return (res.status(500).send("Internal Error"))
+            }
+        })
+
+
+    })();
+
+    // res.send("test")
 })
 
 

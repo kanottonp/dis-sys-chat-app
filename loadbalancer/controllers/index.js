@@ -7,7 +7,7 @@ activeBackend = 1;
 
 postPaths = [
   '/login',
-  // '/createGroup',
+  // '/group',
   // '/joinGroup',
   // '/leaveGroup',
   // '/sendMessage',
@@ -15,7 +15,7 @@ postPaths = [
 ];
 
 getPaths = [
-  // '/getUserInfo',
+  '/group',
   // '/getAllGroup',
   // '/getAllMessage',
   // '/getUnreadMessage',
@@ -23,11 +23,13 @@ getPaths = [
 ];
 
 postPaths.map(path => {
+  console.log(path);
   router.post(path, function (req, res, next) {
     // ACTIVE PRIMARY BACKEND
-    // console.log("IN");
+    console.log("IN");
     axios.post(ip.primaryBackend + path, req.body)
       .then(function (response) {
+        console.log("get from server");
         if (activeBackend === 2) {
           console.log("primary backend is back and taking over the system");
           activeBackend = 1;
@@ -38,6 +40,7 @@ postPaths.map(path => {
       .catch(function (err) {
 
         // ACTIVE SECONDARY BACKEND
+        console.log("postpath error");
         axios.post(ip.secondaryBackend + path, req.body)
           .then(function (response) {
             if (activeBackend === 1) {
@@ -60,7 +63,7 @@ getPaths.map(path => {
   router.get(path, function (req, res, next) {
     // ACTIVE PRIMARY BACKEND
     console.log('fm', req.query);
-    axios.get(ip.primaryBackend + path, { params: req.query} )
+    axios.get(ip.primaryBackend + path + "/" + req.query.gid)
       .then(function (response) {
         if (activeBackend === 2) {
           console.log("primary backend is back and taking over the system");

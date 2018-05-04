@@ -53,12 +53,20 @@ const io = require('socket.io-client');
 export default class Main extends Component {
 	constructor(props) {
 		super(props);
-		axios.post(IpList.loadBalancer + "/login/",cookies.get('username'))
-		.then((response) => {
-
-		}).catch((err) => {
-
-		})
+		setTimeout(async () => {
+			console.log("In main constructor");
+			var gList = [];
+			var gIDList = (await axios.post(IpList.loadBalancer + "/login",{username:cookies.get('username')})).data.groups;
+			console.log("-> login:",gIDList);
+			for(var i = 0 ; i < gIDList.length ; i++){
+				var group = (await axios.get(IpList.loadBalancer + "/group?gid=" + gIDList[i])).data;
+				console.log("--> group:",group);
+				group.id = gIDList[i];
+				gList.push(group);
+			}
+			console.log(gList);
+			cookies.set('groups',gList,{ path: '/', maxAge: 60 * 60 * 24 });
+		}, 0);
 	}
 
 	createGroup() {
@@ -86,7 +94,7 @@ export default class Main extends Component {
 	}
 
 	render() {
-		
+
 		var current_username = cookies.get('username');
 		var socket = io('http://localhost:3333');
 
@@ -103,8 +111,8 @@ export default class Main extends Component {
 						}
 						$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
 			});
-			
-			
+
+
 		});
 
 
@@ -114,25 +122,25 @@ export default class Main extends Component {
 				if ($('#m').val().trim() !== ''){
 					var data =  {username : current_username, message: $('#m').val()};
 					socket.emit('send', {username: data.username, message: data.message});
-					
+
 					document.getElementById('m').value = '';
 					$('#m').focus();
 				}
 		}
-		
+
 		function logout(){
 			window.location = '/';
 			cookies.set('isLogin', 'false');
 			cookies.set('username','');
 		}
-		
+
 		function joinGroup(){
 			var data =  {username : current_username, group : $('#group_name').val()};
 			socket.emit('join group',{username : data.username, group: data.group});
 			console.log(data);
 			document.getElementById('id01').style.display='none';
 		}
-		
+
 		function createGroup(){
 			var data =  {username : current_username, group : $('#new_group_name').val()};
 			socket.emit('create group',{username : data.username, group: data.group});

@@ -29,7 +29,8 @@
 
 .logbutton {
   border:0;
-  background:transparent;
+  background-color: limegreen;
+  border-radius: 40px;
   padding:15px;
   margin-top:50px;
   position:relative;

@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import Safe from 'react-safe';
 import $ from 'jquery';
+
+const io = require('socket.io-client');
 
 
 
@@ -73,7 +76,45 @@ export default class Main extends Component {
 	}
 
 	render() {
+		var current_username='';
+		var socket = io('http://localhost:3333');
 
+		socket.on('connect', function () {
+			socket.on('chat message', function(msg){
+						console.log(msg.createdAt);
+						var date = new Date(msg.createdAt);
+						var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+						var sender = msg.user.username;
+						if (sender === current_username){
+							//$('#newchat').append($('<p>' + msg.user.username + ' | ' + dd + ' : ' + msg.text + '</p>'));
+							$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
+						} else {
+							$('#pagechat').append($('<div class=\"container darker\"><p class=\"w3-left\">' + msg.text + '</p><span class=\"time-left\">' + sender + ' | ' + dd + '</span></div>'));
+						}
+						$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
+			});
+			
+			
+		});
+
+		function save(){
+			current_username = $('#username').val();
+			$('#username').val('');
+		}
+
+		function send(){
+				//var text_box = document.getElementById('m');
+				//socket.emit('chat message', text_box.value);
+				if ($('#m').val().trim() !== ''){
+					var data =  {username : current_username, message: $('#m').val()};
+					socket.emit('send', {username: data.user, message: data.message});
+					
+					document.getElementById('m').value = '';
+					$('#m').focus();
+				}
+		}
+		
+		
 		var navStyle = {
 			zIndex:"3",
 			width:"180px",
@@ -152,10 +193,10 @@ export default class Main extends Component {
 				</div>
 				<div className="w3-main" style={{background: "#ffffff",padding: "3px",marginLeft:"200px", width:"84%",position: "fixed", bottom: "0"}}>
   					<div className='text'>
-    					<input id='m' style={{width:"93%",marginRight:"0.5%"}} type="text" placeholder="  Type message..."/><button className="w3-blue w3-button" onclick="send()" style = {{padding:"10px",borderRadius:"20%"}}>Send</button>
+	<input id='m' style={{width:"93%",marginRight:"0.5%"}} type="text" placeholder="  Type message..."/><button className="w3-blue w3-button" onClick={send} style = {{padding:"10px",borderRadius:"20%"}}>Send</button>
   					</div>
   					<div className='userField'>
-    					<input id='username' style={{width:"10%",marginRight:"0.5%"}} type="text" placeholder="  Type username..."/><button className="w3-blue w3-button" onclick="save()" style = {{padding: "10px",borderRadius:"20%"}}>Save</button>
+	<input id='username' style={{width:"10%",marginRight:"0.5%"}} type="text" placeholder="  Type username..."/><button className="w3-blue w3-button" onClick={save} style = {{padding: "10px",borderRadius:"20%"}}>Save</button>
   					</div>
 				</div>
 

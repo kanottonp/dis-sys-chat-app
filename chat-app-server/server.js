@@ -18,6 +18,7 @@ mongoose.connect('mongodb://localhost:27017/boobooline')
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors)
 
 //Database Access
 
@@ -65,8 +66,6 @@ app.post('/login', function(req, res) {
             res.status(500).send();
         }
     });
-
-
 
 });
 
@@ -118,13 +117,7 @@ app.post('/creategroup', function(req, res) {
 
                             var groupid = ressult._id
                             if (groupid !== null) {
-                                User.findOneAndUpdate({
-                                    'username': username
-                                }, {
-                                    '$push': {
-                                        'groups': groupid
-                                    }
-                                }, function(err) {
+                                User.findOneAndUpdate({ 'username': username }, { '$push': { 'groups': groupid } }, function(err) {
                                     if (err) {
                                         console.log(err);
                                         res.status(500).send("Can't Add Group");
@@ -149,15 +142,42 @@ app.post('/creategroup', function(req, res) {
         });
     })
 
-
-
-
-    // res.redirect('/');
-
-
-
-
 })
+
+app.post('/joingroup', function(req, res) {
+    var username = req.body.username
+    var groupid = req.body.groupid
+
+
+    if (username !== null && groupid !== null) {
+        User.findOneAndUpdate({ 'username': username }, { '$push': { 'groups': groupid } }, (err, result) => {
+            if (!err) {
+                if (!result) {
+                    res.status(500).send("Username is not existed")
+                } else {
+                    // console.log(result);
+                    console.log("Passed")
+                }
+            } else {
+                console.log(err);
+                res.status(500).send();
+            }
+        }).then((result) => {
+            var userid = result._id
+            Group.findOneAndUpdate({ '_id': groupid }, { '$push': { 'groups': groupid } }, (err, resultt) => {
+                if (!err) {
+                    if (!resultt) {
+                        res.status(500).send("Group is not existed")
+                    } else {
+                        res.status(200).send("Join Group Success")
+                    }
+
+                }
+            })
+        })
+    }
+})
+
 
 
 //Live Chat

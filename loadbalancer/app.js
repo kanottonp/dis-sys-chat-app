@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
+const port = process.env.PORT || 3000;
 var app = express();
 
 var io = require('socket.io')();
@@ -24,6 +25,10 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
+});
+
+var server = app.listen(port, function() {
+    console.log('Listening on port ' + port);
 });
 
 // uncomment after placing your favicon in /public

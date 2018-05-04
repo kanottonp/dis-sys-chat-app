@@ -52,11 +52,14 @@ const cookies = new Cookies();
 export default class Main extends Component {
 	constructor(props) {
 		super(props);
-		axios.post(IpList.loadBalancer + "/login/",{username:cookies.get('username')})
+		console.log("In main constructor");
+		axios.post(IpList.loadBalancer + "/login",{username:cookies.get('username')})
 		.then((response) => {
-
+			console.log("Main construct login:", response.groups);
+			cookies.set('groups',response.groups,{path: '/', maxAge: 60 * 60 * 24})
+			console.log("Main construct login: get groups complete");
 		}).catch((err) => {
-
+			console.log("Error to get group: please login again");
 		})
 	}
 

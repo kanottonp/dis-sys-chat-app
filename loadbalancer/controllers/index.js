@@ -23,9 +23,10 @@ getPaths = [
 ];
 
 postPaths.map(path => {
+  console.log(path);
   router.post(path, function (req, res, next) {
     // ACTIVE PRIMARY BACKEND
-    // console.log("IN");
+    console.log("IN");
     axios.post(ip.primaryBackend + path, req.body)
       .then(function (response) {
         if (activeBackend === 2) {

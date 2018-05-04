@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-<<<<<<< HEAD
     "axios": "^0.18.0",
-=======
     "engine.io-client": "^3.2.1",
->>>>>>> 2b715404c4c8bf3b706c3c0c125bc8bdcff14aab
     "jquery": "^3.3.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",

@@ -54,7 +54,7 @@ export default class Main extends Component {
 		super(props);
 		axios.post(IpList.loadBalancer + "/login/",cookies.get('username'))
 		.then((response) => {
-			
+
 		}).catch((err) => {
 
 		})

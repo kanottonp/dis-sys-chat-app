@@ -203,10 +203,10 @@ io.on('connection', function(socket) {
         newMsg.createdAt = new Date();
         // newMsg.save(function(err) {
         // if (err){
-        // console.log('Error in Saving user: '+err);  
-        // throw err;  
+        // console.log('Error in Saving user: '+err);
+        // throw err;
         // }
-        // console.log('User Registration succesful');    
+        // console.log('User Registration succesful');
         // return done(null, newUser);
         // });
         io.emit('chat message', newMsg);

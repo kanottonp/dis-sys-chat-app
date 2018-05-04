@@ -52,7 +52,7 @@ const cookies = new Cookies();
 export default class Main extends Component {
 	constructor(props) {
 		super(props);
-		axios.post(IpList.loadBalancer + "/login/",cookies.get('username'))
+		axios.post(IpList.loadBalancer + "/login/",{username:cookies.get('username')})
 		.then((response) => {
 
 		}).catch((err) => {

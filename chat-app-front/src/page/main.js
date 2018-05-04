@@ -96,7 +96,7 @@ export default class Main extends Component {
 	render() {
 		var groups = [{name: ''}];
 		var current_username = cookies.get('username');
-		var socket = io('http://localhost:3333');
+		var socket = io('http://localhost:3001');
 		var page = 0;
 		var blocking = false;
 		var msgBuffer = [];
@@ -106,7 +106,7 @@ export default class Main extends Component {
 					console.log(msg.createdAt);
 					var date = new Date(msg.createdAt);
 					var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-					var sender = msg.user.username;
+					var sender = msg.username;
 					if (sender === current_username){
 						$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
 					} else {
@@ -131,7 +131,7 @@ export default class Main extends Component {
 				if ($('#m').val().trim() !== ''){
 					var data =  {username : current_username, message: $('#m').val()};
 					socket.emit('send', {username: data.username, message: data.message});
-
+					axios.post("http://localhost:2222/send/message",{data:data});
 					document.getElementById('m').value = '';
 					$('#m').focus();
 				}

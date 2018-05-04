@@ -17,7 +17,11 @@ var groupSchema = new Schema({
         sparse: true,
         default: []
     }],
-    messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
+    messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+    lastmessages: {
+        type: Number,
+        default: 0
+    }
 }, { collection: "groups" });
 
 groupSchema.set('autoIndex', false);

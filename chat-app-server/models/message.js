@@ -7,7 +7,8 @@ var timestamps = require('mongoose-timestamp');
 // create a schema
 var messageSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User' },
-    text: { type: String, required: true }
+    text: { type: String, required: true },
+    number: { type: Number, required: true }
 }, { collection: "messages", timestamps: { createdAt: 'created_at' } });
 /*
 messageSchema.plugin(autoIncrement.plugin, {

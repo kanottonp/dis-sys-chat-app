@@ -1,8 +1,8 @@
 const ipList = {
-    loadBalancer: 'http://localhost:3000',
-    primaryBackend: 'http://127.0.0.1:3333',
-    secondaryBackend: 'http://127.0.0.1:5000',
-    socketServer: 'http://127.0.0.1:3001',
+    loadBalancer: 'http://localhost:2222',
+    primaryBackend: 'http://localhost:3333',
+    secondaryBackend: 'http://localhost:4444',
+    socketServer: 'http://localhost:3001',
 }
 
 module.exports = ipList;

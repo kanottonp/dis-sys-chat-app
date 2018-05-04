@@ -29,6 +29,7 @@ postPaths.map(path => {
     console.log("IN");
     axios.post(ip.primaryBackend + path, req.body)
       .then(function (response) {
+        console.log("get from server");
         if (activeBackend === 2) {
           console.log("primary backend is back and taking over the system");
           activeBackend = 1;
@@ -39,6 +40,7 @@ postPaths.map(path => {
       .catch(function (err) {
 
         // ACTIVE SECONDARY BACKEND
+        console.log("postpath error");
         axios.post(ip.secondaryBackend + path, req.body)
           .then(function (response) {
             if (activeBackend === 1) {

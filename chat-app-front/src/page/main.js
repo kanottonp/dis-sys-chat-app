@@ -53,17 +53,18 @@ const io = require('socket.io-client');
 export default class Main extends Component {
 	constructor(props) {
 		super(props);
-		console.log("In main constructor");
-		axios.post(IpList.loadBalancer + "/login",{username:cookies.get('username')})
-		.then((response) => {
-			// var groupList = response.groups;
-			console.log("Main construct login:", response.data.groups);
-			cookies.set('groups',response.groups,{path: '/', maxAge: 60 * 60 * 24})
-
-			console.log("Main construct login: get groups complete");
-		}).catch((err) => {
-			console.log("Error to get group: please login again");
-		})
+		(async() => {
+			console.log("In main constructor");
+			var gList = [];
+			var gIDList = (await axios.post(IpList.loadBalancer + "/login",{username:cookies.get('username')})).data;
+			console.log("In main constructor grouplist:",gIDList);
+			for(var i = 0 ; i < gIDList.length ; i++){
+				var group = (await axios.post(IpList.loadBalancer + "/group/id",{groupid:gIDList[i]})).data;
+				group.id = gIDList[i];
+				gList.push(group);
+			}
+			cookies.set('groups',gList,{ path: '/', maxAge: 60 * 60 * 24 });
+		})();
 	}
 
 	createGroup() {

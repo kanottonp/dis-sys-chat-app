@@ -57,16 +57,19 @@ export default class Main extends Component {
 		var gList = [];
 		axios.post(IpList.loadBalancer + "/login",{username:cookies.get('username')})
 		.then((response) => {
-			console.log("-> login:",response);
-			var gIDList = response.data;
+			// console.log("-> login:",response);
+			var gIDList = response.data.groups;
+			console.log("-> login:",gIDList);
 			for(var i = 0 ; i < gIDList.length ; i++){
-				axios.get(IpList.loadBalancer + "/group/",{params:gIDList[i]});
-				.then((response) => {
-					console.log("--> group:",response);
-					var group = response.data;
-					group.id = gIDList[i];
-					gList.push(group);
-				})
+				((i) => {
+					axios.get(IpList.loadBalancer + "/group?gid=" + gIDList[i])
+					.then((response) => {
+						console.log("--> group:",response);
+						var group = response.data;
+						group.id = gIDList[i];
+						gList.push(group);
+					})
+				})(i);
 			}
 		});
 		console.log(gList);

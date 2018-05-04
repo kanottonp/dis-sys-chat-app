@@ -7,7 +7,7 @@ activeBackend = 1;
 
 postPaths = [
   '/login',
-  '/group/id',
+  // '/group',
   // '/joinGroup',
   // '/leaveGroup',
   // '/sendMessage',
@@ -15,7 +15,7 @@ postPaths = [
 ];
 
 getPaths = [
-  // '/getUserInfo',
+  '/group',
   // '/getAllGroup',
   // '/getAllMessage',
   // '/getUnreadMessage',
@@ -63,7 +63,7 @@ getPaths.map(path => {
   router.get(path, function (req, res, next) {
     // ACTIVE PRIMARY BACKEND
     console.log('fm', req.query);
-    axios.get(ip.primaryBackend + path, { params: req.query} )
+    axios.get(ip.primaryBackend + path + "/" + req.query.gid)
       .then(function (response) {
         if (activeBackend === 2) {
           console.log("primary backend is back and taking over the system");

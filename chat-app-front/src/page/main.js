@@ -218,12 +218,13 @@ export default class Main extends Component {
 				var msg = msgBuffer[i];
 				var date = new Date(msg.createdAt);
 				var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-				var sender = msg.user.username;
+				var sender = msg.username;
 				if (sender === current_username){
 					$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
 				} else {
 					$('#pagechat').append($('<div class=\"container darker\"><p class=\"w3-left\">' + msg.text + '</p><span class=\"time-left\">' + sender + ' | ' + dd + '</span></div>'));
-				}	
+				}
+				$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
 			}
 			msgBuffer = [];
 			blocking = false;

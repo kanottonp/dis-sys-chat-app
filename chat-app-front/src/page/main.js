@@ -100,25 +100,27 @@ export default class Main extends Component {
 		var page = 0;
 		var blocking = false;
 		var msgBuffer = [];
+		
+		socket.on('chat message', function(msg){
+				if (!blocking){
+					console.log(msg.createdAt);
+					var date = new Date(msg.createdAt);
+					var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+					var sender = msg.user.username;
+					if (sender === current_username){
+						$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
+					} else {
+						$('#pagechat').append($('<div class=\"container darker\"><p class=\"w3-left\">' + msg.text + '</p><span class=\"time-left\">' + sender + ' | ' + dd + '</span></div>'));
+					}
+					$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
+				} else {
+					msgBuffer.push(msg);
+				}
+		});
+
 
 		socket.on('connect', function () {
-			socket.on('chat message', function(msg){
-						if (!blocking){
-							console.log(msg.createdAt);
-							var date = new Date(msg.createdAt);
-							var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-							var sender = msg.user.username;
-							if (sender === current_username){
-								$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
-							} else {
-								$('#pagechat').append($('<div class=\"container darker\"><p class=\"w3-left\">' + msg.text + '</p><span class=\"time-left\">' + sender + ' | ' + dd + '</span></div>'));
-							}
-							$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
-						} else {
-							msgBuffer.push(msg);
-						}
-			});
-
+			
 
 		});
 
@@ -226,6 +228,7 @@ export default class Main extends Component {
 			msgBuffer = [];
 			blocking = false;
 		}
+
 
 		var navStyle = {
 			zIndex:"3",

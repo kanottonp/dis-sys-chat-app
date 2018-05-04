@@ -394,8 +394,8 @@ io.on('connection', function(socket) {
     // io.emit('chat message', msg);
     // });
 
-    socket.on('send', function(msg) {
-        console.log('sending message');
+	socket.on('send', function(msg) {
+        console.log('sending message via 1');
         console.log(msg);
         var newMsg = new Message();
         var thisUser = new User();
@@ -413,4 +413,6 @@ io.on('connection', function(socket) {
         // });
         io.emit('chat message', newMsg);
     });
+	
+	
 });

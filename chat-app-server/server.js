@@ -20,18 +20,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors())
 
-//Database Access
+// Database Access
+
+// List of this SPAGETTI API
+
+
 
 var server = app.listen(port, function() {
     console.log('Listening on port ' + port);
-});
-
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/public/index.html');
-});
-
-app.get('/landing', function(req, res) {
-    res.sendFile(__dirname + '/public/login.html');
 });
 
 app.post('/login', function(req, res) {
@@ -200,7 +196,7 @@ app.post('/creategroup', function(req, res) {
 
 app.post('/joingroup', function(req, res) {
     var username = req.body.username
-    var groupid = req.body.groupid
+    var groupname = req.body.groupname
 
     if (username.trim() === '') {
         return (
@@ -210,34 +206,46 @@ app.post('/joingroup', function(req, res) {
         )
     }
 
-    if (username !== null && groupid !== null) {
-        User.findOneAndUpdate({ 'username': username }, { '$push': { 'groups': groupid } }, (err, result) => {
+    if (username !== null && groupname !== null) {
+        Group.findOne({ 'name': groupname }, (err, resultt) => {
             if (!err) {
-                if (!result) {
-                    res.status(500).send("Username is not existed")
+                if (!resultt) {
+                    return (res.status(404).send("Group Not Found"))
                 } else {
-                    // console.log(result);
-                    console.log("Passed")
+                    console.log("Found Group")
                 }
-            } else {
-                console.log(err);
-                res.status(500).send();
             }
-        }).then((result) => {
-            var userid = result._id
-            Group.findOneAndUpdate({ '_id': groupid }, { '$push': { 'users': userid } }, (err, resultt) => {
+        }).then((resultt) => {
+            var groupid = resultt._id
+            User.findOneAndUpdate({ 'username': username }, { '$addToSet': { 'groups': groupid } }, (err, result) => {
                 if (!err) {
-                    if (!resultt) {
-                        res.status(500).send("Group is not existed")
+                    if (!result) {
+                        res.status(500).send("Username is not existed")
                     } else {
-                        res.status(200).send("Join Group Success")
+                        // console.log(result);
+                        console.log("Passed")
                     }
                 } else {
-                    console.log(err)
-                    res.status(500).send("Internal Error")
+                    console.log(err);
+                    res.status(500).send();
                 }
+            }).then((result) => {
+                var userid = result._id
+                Group.findOneAndUpdate({ '_id': groupid }, { '$push': { 'users': userid } }, (err, resultt) => {
+                    if (!err) {
+                        if (!resultt) {
+                            res.status(500).send("Group is not existed")
+                        } else {
+                            res.status(200).json(resultt)
+                        }
+                    } else {
+                        console.log(err)
+                        res.status(500).send("Internal Error")
+                    }
+                })
             })
         })
+
     }
 })
 

@@ -328,7 +328,7 @@ io.on('connection', function(socket) {
         console.log(msg);
         var newMsg = new Message();
         var thisUser = new User();
-        thisUser.username = msg.user;
+        thisUser.username = msg.username;
         newMsg.user = thisUser;
         newMsg.text = msg.message;
         newMsg.createdAt = new Date();

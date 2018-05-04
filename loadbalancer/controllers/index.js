@@ -19,11 +19,14 @@ getPaths = [
   '/findgroup'
 ];
 
+
 postPaths.map(path => {
   console.log(path);
   router.post(path, function (req, res, next) {
     // ACTIVE PRIMARY BACKEND
     console.log("IN");
+	console.log(req.body)
+	var data = req.body;
     axios.post(ip.primaryBackend + path, req.body)
       .then(function (response) {
         // console.log("get from server");
@@ -34,7 +37,8 @@ postPaths.map(path => {
         else{
           console.log("primary backend is working");
         }
-        // if (path === '/send/message') io.emit('chat', { message: response.data.message });
+		console.log(path)
+        
         // res.send(response.data);
       })
       .catch(function (err) {
@@ -51,8 +55,6 @@ postPaths.map(path => {
             else{
               console.log("secondary backend is working");
             }
-            // if (path === '/sendMessage') io.emit('chat', { message: response.data.message });
-            // res.send(response.data);
           })
           .catch(function (err) {
             console.error(err);

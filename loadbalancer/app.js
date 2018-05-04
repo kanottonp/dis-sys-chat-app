@@ -9,11 +9,20 @@ var cors = require('cors');
 const port = process.env.PORT || 2222;
 var app = express();
 
-var io = require('socket.io')();
+var server = app.listen(3001, function() {
+    console.log('Listening on port ' + port);
+});
+
+var io = require('socket.io').listen(server);
 io.on('connection', function (client) {
   console.log('user connected.');
+  
+	client.on('send',function(msg) {
+		var d = new Date();
+		console.log({ text: msg.message, createdAt : d})
+		io.emit('chat message', { text: msg.message, createdAt : d , username:msg.username});
+	});
 });
-io.listen(3001);
 global.io = io;
 
 // controllers

@@ -24,8 +24,8 @@ app.use(cors())
 
 /*                                         --* List of this SPAGETTI API *--
 
-    GET GROUP BY ID | Path : '/group/:groupid' , Params : ':groupid' , Body : -
-    GET USER BY USERNAME | Path : '/user/:username' , Params : ':username' , Body : -
+    GET GROUP BY ID | Path : '/group' , Query : ':groupid' , Body : -
+    GET USER BY USERNAME | Path : '/user' , Query : ':username' , Body : -
     GET ALL GROUP | Path : '/findgroup', Param: - , Body: -
 
     POST LOGIN | Path : '/login' , Params : - , Body : { 'username' : username }
@@ -81,9 +81,9 @@ app.post('/login', function(req, res) {
 
 });
 
-app.get('/group/:groupid', function(req, res) {
+app.get('/group', function(req, res) {
 
-    var groupid = req.params.groupid
+    var groupid = req.query.groupid
 
     Group.findOne({ _id: groupid }, (err, result) => {
         if (!err) {
@@ -99,9 +99,9 @@ app.get('/group/:groupid', function(req, res) {
     })
 
 })
-app.get('/user/:username', function(req, res) {
+app.get('/user', function(req, res) {
 
-    var username = req.params.username
+    var username = req.query.username
 
     User.findOne({ 'username': username }, (err, result) => {
         if (!err) {

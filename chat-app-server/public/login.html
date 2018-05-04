@@ -10,12 +10,26 @@
 
   <div class='wrap'>
   Login
-    <form>
-        <input type='text' id='username' placeholder='Yourname'>
+    <form action="/login" method="post">
+        <input type='text' name='username' placeholder='Yourname' /><button>LOG IN</button>
     </form>
-  <button class='login'>LOG IN</button>
+
 </div>
 
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+<script type="text/javascript">
+
+function redirect(){
+    window.location.href = "http://localhost:3333/login";
+}
+</script>
+
+
+
 </body>
+
+
 
 </html>

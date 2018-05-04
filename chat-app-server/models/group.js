@@ -5,11 +5,22 @@ var timestamps = require('mongoose-timestamp');
 
 // create a schema
 var groupSchema = new Schema({
-  name: { type: String, required: true, unique: true },
-  users: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],
-  messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        sparse: true
+    },
+    users: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        sparse: true,
+        default: []
+    }],
+    messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
 }, { collection: "groups" });
 
+groupSchema.set('autoIndex', false);
 groupSchema.plugin(timestamps);
 
 // the schema is useless so far

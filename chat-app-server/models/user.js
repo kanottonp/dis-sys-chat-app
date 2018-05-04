@@ -10,6 +10,7 @@ var userSchema = new Schema({
     createdDate: { type: Date, default: Date.now }
 }, { collection: "users" });
 
+userSchema.set('autoIndex', false);
 userSchema.plugin(timestamps);
 
 // the schema is useless so far

@@ -15,6 +15,7 @@ messageSchema.plugin(autoIncrement.plugin, {
     field: 'messageId'
 });
 */
+messageSchema.set('autoIndex', false);
 messageSchema.plugin(timestamps);
 
 // the schema is useless so far

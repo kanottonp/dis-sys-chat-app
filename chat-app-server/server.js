@@ -39,6 +39,12 @@ app.post('/login', function(req, res) {
     console.log(req.body);
     var username = req.body.username;
 
+    if (username.trim() === '') {
+        return (
+            res.status(400).json({ "message": "Can't be a blank space" })
+        )
+    }
+
     var newUser = new User();
     newUser.username = username;
 
@@ -69,6 +75,43 @@ app.post('/login', function(req, res) {
 
 });
 
+app.get('/group/:groupid', function(req, res) {
+
+    var groupid = req.params.groupid
+
+    Group.findOne({ _id: groupid }, (err, result) => {
+        if (!err) {
+            if (!result) {
+                res.status(404).send("Group not found")
+            } else {
+                res.status(200).json(result)
+            }
+        } else {
+            console.log(err)
+            res.status(500).send("Internal Error")
+        }
+    })
+
+})
+app.get('/user/:username', function(req, res) {
+
+    var username = req.params.username
+
+    User.findOne({ 'username': username }, (err, result) => {
+        if (!err) {
+            if (!result) {
+                res.status(404).send("User not found")
+            } else {
+                res.status(200).json(result)
+            }
+        } else {
+            console.log(err)
+            res.status(500).send("Internal Error")
+        }
+    })
+
+})
+
 
 
 
@@ -85,6 +128,14 @@ app.post('/creategroup', function(req, res) {
     console.log('create group')
     var username = req.body.username
     var groupname = req.body.groupname
+
+    if (username.trim() === '') {
+        return (
+            res.status(400).json({
+                "message": "Session Timeout"
+            })
+        )
+    }
 
     User.findOne({ 'username': username }, (err, result) => {
         var userid;
@@ -151,6 +202,13 @@ app.post('/joingroup', function(req, res) {
     var username = req.body.username
     var groupid = req.body.groupid
 
+    if (username.trim() === '') {
+        return (
+            res.status(400).json({
+                "message": "Session Timeout"
+            })
+        )
+    }
 
     if (username !== null && groupid !== null) {
         User.findOneAndUpdate({ 'username': username }, { '$push': { 'groups': groupid } }, (err, result) => {
@@ -186,6 +244,14 @@ app.post('/joingroup', function(req, res) {
 app.post('/leavegroup', function(req, res) {
     var username = req.body.username
     var groupname = req.body.groupname
+
+    if (username.trim() === '') {
+        return (
+            res.status(400).json({
+                "message": "Session Timeout"
+            })
+        )
+    }
 
     User.findOne({ 'username': username }, (err, result) => {
         if (!err) {
@@ -234,6 +300,11 @@ app.post('/leavegroup', function(req, res) {
 
 })
 
+app.post('send/message', function(req, res) {
+    var username = req.body.username
+    var username = req.body.username
+})
+
 
 
 
@@ -271,6 +342,8 @@ io.on('connection', function(socket) {
         // });
         io.emit('chat message', newMsg);
     });
+
+
 
 
 });

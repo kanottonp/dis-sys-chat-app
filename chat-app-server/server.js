@@ -300,9 +300,62 @@ app.post('/leavegroup', function(req, res) {
 
 })
 
-app.post('send/message', function(req, res) {
+app.post('/send/message', function(req, res) {
     var username = req.body.username
-    var username = req.body.username
+    var groupid = req.body.groupid
+    var message = req.body.message
+    var userid;
+    var lastmessages = -99;
+
+
+    (async() => {
+
+        var userid = (await User.findOne({ 'username': username }))._id;
+        var lastmessages = (await Group.findOne({ '_id': groupid })).lastmessages;
+
+        console.log(userid)
+        console.log(lastmessages)
+
+        var mes = new Message()
+        mes.user = userid
+        mes.text = message
+        mes.number = lastmessages + 1
+        mes.group = groupid
+
+        var result = (await new Promise((resolve, reject) => {
+            mes.save((err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send("Error When Save");
+                } else {
+                    console.log('New Message');
+                    // res.status(200).json(result)
+                }
+                resolve(result);
+            })
+        }));
+
+        Group.findOneAndUpdate({ '_id': groupid }, {
+            '$push': { 'messages': result._id },
+            '$set': { 'lastmessages': lastmessages + 1 }
+        }, (err, result) => {
+            if (!err) {
+                if (!result) {
+                    return (res.status(500).send("Can't Send Message"))
+                } else {
+                    console.log('Send Message')
+                    return (res.status(200).json(result))
+                }
+            } else {
+                console.log(err)
+                return (res.status(500).send("Internal Error"))
+            }
+        })
+
+
+    })();
+
+    // res.send("test")
 })
 
 

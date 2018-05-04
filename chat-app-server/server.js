@@ -43,32 +43,34 @@ app.post('/login', function(req, res) {
 	
 	console.log(username);
     User.findOne({ 'username': newUser.username }, (err, result) => {
-        console.log('hello1');
+        // console.log('hello1')
         if (!err) {
-            console.log('hello2');
-                // If the document doesn't exist
+            // console.log('hello2')
+            // If the document doesn't exist
             if (!result) {
-                console.log('hello3');
-                    // Create and Save it
+                // console.log('hello3')
+                // Create and Save it
                 newUser.save(function(err) {
                     if (err) {
                         console.log(err);
-                        res.status(400).send();
+                        //res.status(400).send();
                     } else {
-                        res.status(200).send(`${newUser.username} is Registered `);
+						console.log('new user');
+                        //res.status(200).send(`${newUser.username} is Registered `);
                     }
                 })
             } else {
-                res.status(200).send(`${newUser.username} is logging in `);
+				console.log('exisiting user');
+                //res.status(200).send(`${newUser.username} is logging in `);
             }
 
         } else {
             console.log(err);
-            res.status(500).send();
+            //res.status(500).send();
         }
     });
 	
-	res.redirect('');
+	res.redirect('/');
 
 });
 

@@ -6,7 +6,7 @@ var timestamps = require('mongoose-timestamp');
 // create a schema
 var userSchema = new Schema({
     username: { type: String, required: true, unique: true, sparse: true },
-    groups: [{ type: Schema.Types.ObjectId, ref: 'Group', unique: true, sparse: true }],
+    groups: [{ type: Schema.Types.ObjectId, ref: 'Group', sparse: true }],
     createdDate: { type: Date, default: Date.now }
 }, { collection: "users" });
 

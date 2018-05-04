@@ -48,7 +48,7 @@ app.post('/login', function(req, res) {
             // console.log('hello2')
             // If the document doesn't exist
             if (!result) {
-                // console.log('hello3')
+                // console.log('hello3')	
                 // Create and Save it
                 newUser.save(function(err) {
                     if (err) {

@@ -18,7 +18,7 @@ mongoose.connect('mongodb://localhost:27017/boobooline')
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cors)
+app.use(cors())
 
 //Database Access
 

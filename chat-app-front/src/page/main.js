@@ -59,7 +59,7 @@ export default class Main extends Component {
 			var gIDList = (await axios.post(IpList.loadBalancer + "/login",{username:cookies.get('username')})).data.groups;
 			console.log("-> login:",gIDList);
 			for(var i = 0 ; i < gIDList.length ; i++){
-				var group = (await axios.get(IpList.loadBalancer + "/group?gid=" + gIDList[i])).data;
+				var group = (await axios.get(IpList.loadBalancer + "/group?params=" + gIDList[i])).data;
 				console.log("--> group:",group);
 				group.id = gIDList[i];
 				gList.push(group);
@@ -160,7 +160,7 @@ export default class Main extends Component {
 		function selectGroup(){
 			document.getElementById('id03').style.display='none';
 		}
-		
+
 		function listGroups(){
 
 			for (var i=0;i<groups.length;i++){
@@ -178,7 +178,7 @@ export default class Main extends Component {
 			zIndex:"3",
 			width:"180px",
 		};
-		
+
 
 
 		return(

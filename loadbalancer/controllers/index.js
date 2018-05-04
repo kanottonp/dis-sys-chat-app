@@ -7,19 +7,16 @@ activeBackend = 1;
 
 postPaths = [
   '/login',
-  // '/group',
-  // '/joinGroup',
-  // '/leaveGroup',
-  // '/sendMessage',
-  // '/setReadAt',
+  '/creategroup',
+  '/joingroup',
+  '/leavegroup',
+  '/send/message'
 ];
 
 getPaths = [
   '/group',
-  // '/getAllGroup',
-  // '/getAllMessage',
-  // '/getUnreadMessage',
-  // '/viewUnreadMessages',
+  '/user',
+  '/findgroup'
 ];
 
 postPaths.map(path => {
@@ -29,13 +26,16 @@ postPaths.map(path => {
     console.log("IN");
     axios.post(ip.primaryBackend + path, req.body)
       .then(function (response) {
-        console.log("get from server");
+        // console.log("get from server");
         if (activeBackend === 2) {
           console.log("primary backend is back and taking over the system");
           activeBackend = 1;
         }
-        if (path === '/sendMessage') io.emit('chat', { message: response.data.message });
-        res.send(response.data);
+        else{
+          console.log("primary backend is working");
+        }
+        // if (path === '/send/message') io.emit('chat', { message: response.data.message });
+        // res.send(response.data);
       })
       .catch(function (err) {
 
@@ -48,8 +48,11 @@ postPaths.map(path => {
               console.log("secondary backend is taking over the system");
               activeBackend = 2;
             }
-            if (path === '/sendMessage') io.emit('chat', { message: response.data.message });
-            res.send(response.data);
+            else{
+              console.log("secondary backend is working");
+            }
+            // if (path === '/sendMessage') io.emit('chat', { message: response.data.message });
+            // res.send(response.data);
           })
           .catch(function (err) {
             console.error(err);
@@ -60,26 +63,35 @@ postPaths.map(path => {
 });
 
 getPaths.map(path => {
+  console.log("GET:",path);
   router.get(path, function (req, res, next) {
     // ACTIVE PRIMARY BACKEND
     console.log('nottyking', req.query);
-    axios.get(ip.primaryBackend + path + "/" + req.query.gid)
+    console.log(ip.primaryBackend + path + "?params=" + a);
+    var a = req.query.params;
+    axios.get(ip.primaryBackend + path + "?params=" + a)
       .then(function (response) {
         if (activeBackend === 2) {
           console.log("primary backend is back and taking over the system");
           activeBackend = 1;
         }
+        else{
+          console.log("primary backend is working");
+        }
         res.send(response.data);
       })
       .catch(function (err) {
-
+        console.log(err);
         // ACTIVE SECONDARY BACKEND
-        axios.get(ip.secondaryBackend + path, req.query)
+        axios.get(ip.secondaryBackend + path, {params: req.query})
           .then(function (response) {
             if (activeBackend === 1) {
               console.log("primary backend is inactived");
               console.log("secondary backend is taking over the system");
               activeBackend = 2;
+            }
+            else{
+              console.log("secondary backend is working");
             }
             res.send(response.data);
           })

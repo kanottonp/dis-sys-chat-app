@@ -94,22 +94,29 @@ export default class Main extends Component {
 	}
 
 	render() {
-		var groups = cookies.get('groups');
+		var groups = [{name: ''}];
 		var current_username = cookies.get('username');
 		var socket = io('http://localhost:3333');
+		var page = 0;
+		var blocking = false;
+		var msgBuffer = [];
 
 		socket.on('connect', function () {
 			socket.on('chat message', function(msg){
-						console.log(msg.createdAt);
-						var date = new Date(msg.createdAt);
-						var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-						var sender = msg.user.username;
-						if (sender === current_username){
-							$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
+						if (!blocking){
+							console.log(msg.createdAt);
+							var date = new Date(msg.createdAt);
+							var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+							var sender = msg.user.username;
+							if (sender === current_username){
+								$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
+							} else {
+								$('#pagechat').append($('<div class=\"container darker\"><p class=\"w3-left\">' + msg.text + '</p><span class=\"time-left\">' + sender + ' | ' + dd + '</span></div>'));
+							}
+							$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
 						} else {
-							$('#pagechat').append($('<div class=\"container darker\"><p class=\"w3-left\">' + msg.text + '</p><span class=\"time-left\">' + sender + ' | ' + dd + '</span></div>'));
+							msgBuffer.push(msg);
 						}
-						$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
 			});
 
 
@@ -136,28 +143,56 @@ export default class Main extends Component {
 		}
 
 		async function joinGroup(){
-			var data =  {username : current_username, group : $('#group_name').val()};
-			var status = (await axios.post("http://localhost:2222/",{username:data.username,groupid:data.group}));
-			console.log("Join group:",status);
-			if(status==200){
-				console.log("joining success!");
-			}
-			else{
-				alert("");
-			}
-			//socket.emit('join group',{username : data.username, group: data.group});
-			//console.log(data);
+			var data =  {username : current_username, group : $('#joining_group_name').val()};
+			socket.emit('create group', {username : data.username, group: data.group});
+			console.log(data);
 			document.getElementById('id01').style.display='none';
+
+			var new_group = {name : data.group};
+			if (!(groups.indexOf(new_group) != -1)){
+				var l = groups.length;
+				$('#my_groups').append($('<button class="w3-bar-item w3-button w3-mobile" value=' + l +'>' + data.group + '</button>'));
+				groups.push(new_group);
+				$('#my_groups').on('click','button', function(){
+					selectGroup($(this));
+				});
+				document.getElementById('show_group_name').innerHTML = data.group;
+				$('#pagechat').empty();
+				// var data =  {username : current_username, group : $('#group_name').val()};
+				// var status = (await axios.post("http://localhost:2222/",{username:data.username,groupid:data.group}));
+				// console.log("Join group:",status);
+				// if(status==200){
+					// console.log("joining success!");
+				// }
+				// else{
+					// alert("");
+				// }
+				//socket.emit('join group',{username : data.username, group: data.group});
+				//console.log(data);
+				document.getElementById('id01').style.display='none';
+			}
 		}
 
 		function createGroup(){
 			var data =  {username : current_username, group : $('#new_group_name').val()};
-			socket.emit('create group',{username : data.username, group: data.group});
+			socket.emit('create group', {username : data.username, group: data.group});
 			console.log(data);
 			document.getElementById('id02').style.display='none';
+			var new_group = {name : data.group};
+			var l = groups.length;
+			$('#my_groups').append($('<button class="w3-bar-item w3-button w3-mobile" value=' + l +'>' + data.group + '</button>'));
+			groups.push(new_group);
+			$('#my_groups').on('click','button', function(){
+				selectGroup($(this));
+			});
+			document.getElementById('show_group_name').innerHTML = data.group;
+			$('#pagechat').empty();
 		}
 
-		function selectGroup(){
+		function selectGroup(objButton){	
+			$('#pagechat').empty();
+			page = objButton[0].value;
+			document.getElementById('show_group_name').innerHTML = groups[page].name;
 			document.getElementById('id03').style.display='none';
 		}
 
@@ -166,12 +201,30 @@ export default class Main extends Component {
 			for (var i=0;i<groups.length;i++){
 				var group_name = groups[i].name;
 				var group_id = groups[i]._id;
-				$('#my_groups').append($('<a class="w3-bar-item w3-button w3-mobile">' + {group_name} + ' : ' + {group_id} +'</a>'));
+
 			}
-			$('#my_groups').on('click','a', function(){
-				selectGroup();
-			});
+
 			document.getElementById('id03').style.display='block';
+		}
+		
+		function setBlocking(){
+			blocking = true;
+		}
+		
+		function setUnblocking(){
+			for (var i=0;i<msgBuffer.length;i++){
+				var msg = msgBuffer[i];
+				var date = new Date(msg.createdAt);
+				var dd = date.toDateString()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+				var sender = msg.user.username;
+				if (sender === current_username){
+					$('#pagechat').append($('<div class=\"container\"><p class=\"w3-right\">' + msg.text + '</p><span class=\"time-right\">' + sender + ' | ' + dd + '</span></div>'));
+				} else {
+					$('#pagechat').append($('<div class=\"container darker\"><p class=\"w3-left\">' + msg.text + '</p><span class=\"time-left\">' + sender + ' | ' + dd + '</span></div>'));
+				}	
+			}
+			msgBuffer = [];
+			blocking = false;
 		}
 
 		var navStyle = {
@@ -185,10 +238,10 @@ export default class Main extends Component {
 			<div>
 				<nav className="w3-sidebar w3-bar-block w3-collapse w3-white w3-top w3-animate-left w3-card acontainer" style={navStyle} id="mySidebar">
 	<a className="w3-bar-item w3-border-bottom w3-large"><i className="fa fa-user w3-margin-right"></i>{current_username}</a>
-  					<a href="#" className="w3-bar-item w3-button" onClick={listGroups}><i className="fa fa-comment w3-margin-right"></i>Group Chat</a>
-  					<a href="#" className="w3-bar-item w3-button" onClick={this.createJoin.bind(this)}><i className="fas fa-sign-in-alt w3-margin-right"></i>Join Group</a>
-  					<a href="#" className="w3-bar-item w3-button" onClick={this.createGroup.bind(this)}><i className="fas fa-plus-circle w3-margin-right"></i>Create Group</a>
-  					<a href="#" className="w3-bar-item w3-button" onClick={logout}><i className="fa fa-times-circle w3-margin-right"></i>Logout</a>
+  					<a className="w3-bar-item w3-button" onClick={listGroups}><i className="fa fa-comment w3-margin-right"></i>Group Chat</a>
+  					<a className="w3-bar-item w3-button" onClick={this.createJoin.bind(this)}><i className="fas fa-sign-in-alt w3-margin-right"></i>Join Group</a>
+  					<a className="w3-bar-item w3-button" onClick={this.createGroup.bind(this)}><i className="fas fa-plus-circle w3-margin-right"></i>Create Group</a>
+  					<a className="w3-bar-item w3-button" onClick={logout}><i className="fa fa-times-circle w3-margin-right"></i>Logout</a>
 				</nav>
 
 				<div id="id01" className="w3-modal" style={{zIndex:"4"}}>
@@ -200,7 +253,7 @@ export default class Main extends Component {
     					</div>
     					<div class="w3-panel">
       						<label id="groupName">Group Name</label>
-      						<input id ='group_name' className="w3-input w3-border w3-margin-bottom" type="text" />
+      						<input id ='joining_group_name' className="w3-input w3-border w3-margin-bottom" type="text" />
       						<div className="w3-section">
         						<a></a>
         						<a className="w3-button w3-light-grey" onClick={joinGroup}>Join  <i className="fas fa-sign-in-alt w3-margin-right"></i></a>
@@ -240,15 +293,16 @@ export default class Main extends Component {
 
 				<div className="w3-overlay w3-hide-large w3-animate-opacity" onClick="w3_close()" style={{cursor:"pointer"}} title="Close Sidemenu" id="myOverlay"></div>
 
-				<div id="pagechat" className="w3-main" style={{marginBottom:"100px",marginLeft:"200px",marginTop:"100px",width:"84%"}}>
+				<div className="w3-main" style={{marginBottom:"100px",marginLeft:"200px",marginTop:"100px",width:"84%"}}>
   					<i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
 
   					<header className="w3-container w3-xlarge" style={{position:"fixed",top:"0",background:"#ffffff",marginBottom : "200px", width:"88vw"}}>
-						<p className="w3-left w3-margin-left">Currently display Group : Group_NAME</p>
-    					<a href="#" className="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Block</a>
-    					<a href="#" className="w3-blue w3-button w3-right w3-margin-top w3-margin-right">Get Unread</a>
+						<p id='show_group_name' className="w3-left w3-margin-left"></p>
+    					<a className="w3-blue w3-button w3-right w3-margin-top w3-margin-right" onClick={setBlocking}>Block</a>
+    					<a className="w3-blue w3-button w3-right w3-margin-top w3-margin-right" onClick={setUnblocking}>Get Unread</a>
   					</header>
 
+				<div id="pagechat" className="w3-main"></div>
 				</div>
 				<div className="w3-main" style={{background: "#ffffff",padding: "3px",marginLeft:"200px", width:"84%",position: "fixed", bottom: "0"}}>
   					<div className='text'>

@@ -7,7 +7,7 @@ activeBackend = 1;
 
 postPaths = [
   '/login',
-  // '/createGroup',
+  '/group/id',
   // '/joinGroup',
   // '/leaveGroup',
   // '/sendMessage',

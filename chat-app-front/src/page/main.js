@@ -56,8 +56,10 @@ export default class Main extends Component {
 		console.log("In main constructor");
 		axios.post(IpList.loadBalancer + "/login",{username:cookies.get('username')})
 		.then((response) => {
-			console.log("Main construct login:", response.groups);
+			// var groupList = response.groups;
+			console.log("Main construct login:", response.data.groups);
 			cookies.set('groups',response.groups,{path: '/', maxAge: 60 * 60 * 24})
+
 			console.log("Main construct login: get groups complete");
 		}).catch((err) => {
 			console.log("Error to get group: please login again");
@@ -89,7 +91,7 @@ export default class Main extends Component {
 	}
 
 	render() {
-		
+
 		var current_username = cookies.get('username');
 		var socket = io('http://localhost:3333');
 
@@ -106,8 +108,8 @@ export default class Main extends Component {
 						}
 						$("html, body").animate({ scrollTop: $(document).height()-$(window).height() }, 0);
 			});
-			
-			
+
+
 		});
 
 
@@ -117,25 +119,25 @@ export default class Main extends Component {
 				if ($('#m').val().trim() !== ''){
 					var data =  {username : current_username, message: $('#m').val()};
 					socket.emit('send', {username: data.username, message: data.message});
-					
+
 					document.getElementById('m').value = '';
 					$('#m').focus();
 				}
 		}
-		
+
 		function logout(){
 			window.location = '/';
 			cookies.set('isLogin', 'false');
 			cookies.set('username','');
 		}
-		
+
 		function joinGroup(){
 			var data =  {username : current_username, group : $('#group_name').val()};
 			socket.emit('join group',{username : data.username, group: data.group});
 			console.log(data);
 			document.getElementById('id01').style.display='none';
 		}
-		
+
 		function createGroup(){
 			var data =  {username : current_username, group : $('#new_group_name').val()};
 			socket.emit('create group',{username : data.username, group: data.group});

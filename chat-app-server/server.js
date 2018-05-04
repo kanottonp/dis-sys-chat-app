@@ -342,12 +342,4 @@ io.on('connection', function(socket) {
         // });
         io.emit('chat message', newMsg);
     });
-
-
-<<<<<<< HEAD
 });
-=======
-
-
-});
->>>>>>> b79b07a84a5a2bf5776e43a997b60250b614d317

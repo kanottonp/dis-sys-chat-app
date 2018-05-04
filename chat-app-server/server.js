@@ -83,7 +83,7 @@ app.post('/login', function(req, res) {
 
 app.get('/group', function(req, res) {
 
-    var groupid = req.query.groupid
+    var groupid = req.query.params
 
     Group.findOne({ _id: groupid }, (err, result) => {
         if (!err) {
@@ -101,7 +101,7 @@ app.get('/group', function(req, res) {
 })
 app.get('/user', function(req, res) {
 
-    var username = req.query.username
+    var username = req.query.params
 
     User.findOne({ 'username': username }, (err, result) => {
         if (!err) {
